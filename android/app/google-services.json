@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "716728213933",
+    "firebase_url": "https://wedid-b188e.firebaseio.com",
+    "project_id": "wedid-b188e",
+    "storage_bucket": "wedid-b188e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:716728213933:android:d530a527c0bd192f344124",
+        "android_client_info": {
+          "package_name": "com.example.burayabakarlar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "716728213933-okdjfstmentcila7f8afrqjd9nm6m4oh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgfGKhIvm-usslkBaMqp8uybFEuSkQ10E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "716728213933-okdjfstmentcila7f8afrqjd9nm6m4oh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -53,7 +53,7 @@ class AfterSplash extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                "Günlük paket sayısı",
+                "Günlük Paket Sayısı",
                 style: textStyle,
               ),
               TextField(
