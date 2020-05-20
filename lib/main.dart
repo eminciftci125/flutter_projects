@@ -1,6 +1,7 @@
 import 'package:burayabakarlar/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:splashscreen/splashscreen.dart';
+import 'login_page.dart';
 
 void main() {
   runApp(new MaterialApp(
@@ -49,29 +50,7 @@ class AfterSplash extends StatelessWidget {
       body: new Container(
         width: MediaQuery.of(context).size.width,
         child: SafeArea(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                "Günlük Paket Sayısı",
-                style: textStyle,
-              ),
-              TextField(
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  fillColor: Colors.white,
-                ),
-              ),
-              Text(
-                "Paketteki sigara sayısı",
-                style: textStyle,
-              ),
-              Text(
-                "Bir paketin ücreti",
-                style: textStyle,
-              ),
-            ],
-          ),
+          child: Login(),
         ),
         decoration: new BoxDecoration(
           gradient: new LinearGradient(
