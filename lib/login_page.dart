@@ -1,9 +1,31 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class Login extends StatelessWidget {
+import 'main.dart';
+
+class Login extends StatefulWidget {
   const Login({
     Key key,
   }) : super(key: key);
+
+  @override
+  LoginState createState() => LoginState();
+}
+
+class LoginState extends State<Login> {
+
+  final _auth = FirebaseAuth.instance;
+  final GlobalKey<FormState> _registerFormKey = GlobalKey<FormState>();
+  TextEditingController usernameController;
+  TextEditingController passwordController;
+
+  @override
+  initState() {
+    usernameController = new TextEditingController();
+    passwordController = new TextEditingController();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +36,7 @@ class Login extends StatelessWidget {
         children: <Widget>[
           TextFormField(
             keyboardType: TextInputType.text,
+            controller: usernameController,
             decoration: InputDecoration(
               labelText: "Kullanıcı Adı",
               filled: true,
@@ -25,6 +48,7 @@ class Login extends StatelessWidget {
             height: 30,
           ),
           TextFormField(
+            controller: passwordController,
             keyboardType: TextInputType.text,
             obscureText: true,
             decoration: InputDecoration(
@@ -45,7 +69,25 @@ class Login extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 50.0),
             child: FlatButton(
-              onPressed: () {},
+              onPressed: () async {
+                setState(() {
+                  //showProgress = true;
+                });
+                try {
+                  await _auth.createUserWithEmailAndPassword(
+                      email: usernameController.text, password: passwordController.text);
+             /*     if (newuser != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Welcome()),
+                    );
+                    setState(() {
+                     // showProgress = false;
+                    });
+                  }*/
+                } catch (e) {}
+              },
               child: Text(
                 'Kaydol',
               ),
@@ -55,4 +97,7 @@ class Login extends StatelessWidget {
       ),
     );
   }
+}
+
+class Welcome {
 }
