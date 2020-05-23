@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:keyboard_visibility/keyboard_visibility.dart';
+
+import 'main.dart';
 
 class Login extends StatefulWidget {
   const Login({
@@ -7,28 +10,21 @@ class Login extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _LoginState createState() => _LoginState();
+  LoginState createState() => LoginState();
 }
 
-class _LoginState extends State<Login> {
-  bool hideRegister = false;
+class LoginState extends State<Login> {
 
-  @protected
-  void initState() {
+  final _auth = FirebaseAuth.instance;
+  final GlobalKey<FormState> _registerFormKey = GlobalKey<FormState>();
+  TextEditingController usernameController;
+  TextEditingController passwordController;
+
+  @override
+  initState() {
+    usernameController = new TextEditingController();
+    passwordController = new TextEditingController();
     super.initState();
-
-    KeyboardVisibilityNotification().addNewListener(
-      onChange: (bool visible) {
-        if (visible)
-          setState(() {
-            hideRegister = true;
-          });
-        else
-          setState(() {
-            hideRegister = false;
-          });
-      },
-    );
   }
 
   @override
@@ -40,6 +36,7 @@ class _LoginState extends State<Login> {
         children: <Widget>[
           TextFormField(
             keyboardType: TextInputType.text,
+            controller: usernameController,
             decoration: InputDecoration(
               labelText: "Kullanıcı Adı",
               filled: true,
@@ -55,6 +52,7 @@ class _LoginState extends State<Login> {
             height: 30,
           ),
           TextFormField(
+            controller: passwordController,
             keyboardType: TextInputType.text,
             obscureText: true,
             decoration: InputDecoration(
@@ -79,21 +77,38 @@ class _LoginState extends State<Login> {
               child: Text('Giriş Yap'),
             ),
           ),
-          hideRegister == false
-              ? Container(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 50.0),
-                    child: FlatButton(
-                      onPressed: () {},
-                      child: Text(
-                        'Kaydol',
-                      ),
-                    ),
-                  ),
-                )
-              : Container(),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 50.0),
+            child: FlatButton(
+              onPressed: () async {
+                setState(() {
+                  //showProgress = true;
+                });
+                try {
+                  await _auth.createUserWithEmailAndPassword(
+                      email: usernameController.text, password: passwordController.text);
+             /*     if (newuser != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Welcome()),
+                    );
+                    setState(() {
+                     // showProgress = false;
+                    });
+                  }*/
+                } catch (e) {}
+              },
+              child: Text(
+                'Kaydol',
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
+}
+
+class Welcome {
 }
