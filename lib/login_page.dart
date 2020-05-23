@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:keyboard_visibility/keyboard_visibility.dart';
 
 import 'main.dart';
 
@@ -14,16 +15,25 @@ class Login extends StatefulWidget {
 }
 
 class LoginState extends State<Login> {
-
   final _auth = FirebaseAuth.instance;
   final GlobalKey<FormState> _registerFormKey = GlobalKey<FormState>();
   TextEditingController usernameController;
   TextEditingController passwordController;
+  bool keyboardOpen = false;
 
   @override
   initState() {
     usernameController = new TextEditingController();
     passwordController = new TextEditingController();
+
+    KeyboardVisibilityNotification().addNewListener(
+      onChange: (bool visible) {
+        setState(() {
+          keyboardOpen = visible;
+        });
+      },
+    );
+
     super.initState();
   }
 
@@ -77,38 +87,42 @@ class LoginState extends State<Login> {
               child: Text('Giriş Yap'),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 50.0),
-            child: FlatButton(
-              onPressed: () async {
-                setState(() {
-                  //showProgress = true;
-                });
-                try {
-                  await _auth.createUserWithEmailAndPassword(
-                      email: usernameController.text, password: passwordController.text);
-             /*     if (newuser != null) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => Welcome()),
-                    );
-                    setState(() {
-                     // showProgress = false;
-                    });
-                  }*/
-                } catch (e) {}
-              },
-              child: Text(
-                'Kaydol',
-              ),
-            ),
-          ),
+          keyboardOpen == false
+              ? Container(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 50.0),
+                    child: FlatButton(
+                      onPressed: () async {
+                        setState(() {
+                          //showProgress = true;
+                        });
+                        try {
+                          await _auth.createUserWithEmailAndPassword(
+                              email: usernameController.text,
+                              password: passwordController.text);
+                          /*     if (newuser != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Welcome()),
+                      );
+                      setState(() {
+                       // showProgress = false;
+                      });
+                    }*/
+                        } catch (e) {}
+                      },
+                      child: Text(
+                        'Kaydol',
+                      ),
+                    ),
+                  ),
+                )
+              : Container(),
         ],
       ),
     );
   }
 }
 
-class Welcome {
-}
+class Welcome {}
