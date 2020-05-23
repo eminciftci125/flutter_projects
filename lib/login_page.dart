@@ -40,21 +40,21 @@ class LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(15),
+      margin: EdgeInsets.all(20),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           TextFormField(
             keyboardType: TextInputType.text,
             controller: usernameController,
+            autofocus: false,
+            validator: (value) =>
+                validateEmail(value) == null ? 'Invalid email' : null,
             decoration: InputDecoration(
-              labelText: "Kullanıcı Adı",
-              filled: true,
-              fillColor: Colors.white,
-              border: OutlineInputBorder(
-                borderRadius: const BorderRadius.all(
-                  const Radius.circular(30.0),
-                ),
+              hintText: 'Email',
+              icon: new Icon(
+                Icons.mail,
+                color: Colors.black54,
               ),
             ),
           ),
@@ -65,23 +65,21 @@ class LoginState extends State<Login> {
             controller: passwordController,
             keyboardType: TextInputType.text,
             obscureText: true,
+            autofocus: false,
             decoration: InputDecoration(
-              labelText: "Şifre",
-              filled: true,
-              fillColor: Colors.white,
-              border: OutlineInputBorder(
-                borderRadius: const BorderRadius.all(
-                  const Radius.circular(30.0),
-                ),
+              hintText: "Şifre",
+              icon: new Icon(
+                Icons.lock,
+                color: Colors.black54,
               ),
             ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 15.0),
             child: RaisedButton(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18.0),
-              ),
+              elevation: 5.0,
+              shape: new RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(30.0)),
               color: Colors.white,
               onPressed: () {},
               child: Text('Giriş Yap'),
@@ -97,7 +95,7 @@ class LoginState extends State<Login> {
                           //showProgress = true;
                         });
                         try {
-                          await _auth.createUserWithEmailAndPassword(
+                          await _auth.signInWithEmailAndPassword(
                               email: usernameController.text,
                               password: passwordController.text);
                           /*     if (newuser != null) {
@@ -122,6 +120,16 @@ class LoginState extends State<Login> {
         ],
       ),
     );
+  }
+
+  String validateEmail(String value) {
+    Pattern pattern =
+        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+    RegExp regex = new RegExp(pattern);
+    if (!regex.hasMatch(value))
+      return 'Enter Valid Email';
+    else
+      return null;
   }
 }
 
