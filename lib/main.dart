@@ -1,7 +1,7 @@
-import 'package:burayabakarlar/theme.dart';
+import 'file:///C:/Users/Duygu/AndroidStudioProjects/flutter_projects/flutter_projects/lib/values/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:splashscreen/splashscreen.dart';
-import 'login_page.dart';
+import 'screens/login_page.dart';
+import 'screens/splash.dart';
 
 void main() {
   runApp(new MaterialApp(
@@ -22,9 +22,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    var assetsImage = new AssetImage(
-        'assets/images/ikon.png'); //<- Creates an object that fetches an image.
-    var image = new Image(image: assetsImage, fit: BoxFit.cover);
+    var assetsImage = new AssetImage('assets/images/ikon.png'); //<- Creates an object that fetches an image.
+    var image = new Image(image: assetsImage);
     return new SplashScreen(
         seconds: 5,
         navigateAfterSeconds: new AfterSplash(),
@@ -37,7 +36,7 @@ class _HomePageState extends State<HomePage> {
             stops: [0.0, 1.0],
             tileMode: TileMode.clamp),
         styleTextUnderTheLoader: new TextStyle(),
-        photoSize: 100.0,
+        photoSize: MediaQuery.of(context).size.height/6,
         onClick: () => print("Flutter Egypt"),
         loaderColor: white);
   }

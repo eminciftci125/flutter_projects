@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
 
-import 'main.dart';
 
 class Login extends StatefulWidget {
   const Login({
@@ -44,6 +43,12 @@ class LoginState extends State<Login> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
+         Image(
+            image: new AssetImage('assets/images/ikon.png'),
+            color: null,
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.center,
+          ),
           TextFormField(
             keyboardType: TextInputType.text,
             controller: usernameController,
@@ -95,7 +100,7 @@ class LoginState extends State<Login> {
                           //showProgress = true;
                         });
                         try {
-                          await _auth.signInWithEmailAndPassword(
+                          await _auth.createUserWithEmailAndPassword(
                               email: usernameController.text,
                               password: passwordController.text);
                           /*     if (newuser != null) {
@@ -105,7 +110,6 @@ class LoginState extends State<Login> {
                             builder: (context) => Welcome()),
                       );
                       setState(() {
-                       // showProgress = false;
                       });
                     }*/
                         } catch (e) {}

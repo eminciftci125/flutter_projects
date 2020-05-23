@@ -6,7 +6,7 @@ Color greenbackgroundcolor = _colorFromHex("#74c44c");
 Color white = Colors.white;
 
 TextStyle textStyle =
-    new TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color: white);
+new TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0, color: white);
 
 Color _colorFromHex(String hexColor) {
   final hexCode = hexColor.replaceAll('#', '');
