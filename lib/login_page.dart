@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'main.dart';
 
@@ -20,6 +21,7 @@ class LoginState extends State<Login> {
   TextEditingController usernameController;
   TextEditingController passwordController;
   bool keyboardOpen = false;
+  bool _isLoading = false;
 
   @override
   initState() {
@@ -43,6 +45,7 @@ class LoginState extends State<Login> {
       margin: EdgeInsets.all(20),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           TextFormField(
             keyboardType: TextInputType.text,
@@ -75,13 +78,14 @@ class LoginState extends State<Login> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 15.0),
+            padding: const EdgeInsets.symmetric(vertical: 30.0),
             child: RaisedButton(
-              elevation: 5.0,
               shape: new RoundedRectangleBorder(
                   borderRadius: new BorderRadius.circular(30.0)),
               color: Colors.white,
-              onPressed: () {},
+              onPressed: () {
+                validateAndLogin();
+              },
               child: Text('Giriş Yap'),
             ),
           ),
@@ -130,6 +134,31 @@ class LoginState extends State<Login> {
       return 'Enter Valid Email';
     else
       return null;
+  }
+
+  void validateAndLogin() async {
+    try {
+      FocusScope.of(context).requestFocus(FocusNode());
+      var _authUser = await _auth.signInWithEmailAndPassword(
+          email: usernameController.text, password: passwordController.text);
+
+      print(_authUser);
+    } catch (e) {
+      switch (e.code) {
+        case "ERROR_INVALID_EMAIL":
+          {
+            Fluttertoast.showToast(msg: "Invalid email");
+            break;
+          }
+        case "ERROR_USER_NOT_FOUND":
+          {
+            Fluttertoast.showToast(msg: "Incorrect email/password");
+            break;
+          }
+        default:
+          Fluttertoast.showToast(msg: "Email or password can not be empty");
+      }
+    }
   }
 }
 
