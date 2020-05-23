@@ -1,12 +1,17 @@
-import 'file:///C:/Users/Duygu/AndroidStudioProjects/flutter_projects/flutter_projects/lib/values/theme.dart';
+import 'package:burayabakarlar/screens/welcome.dart';
 import 'package:flutter/material.dart';
-import 'screens/login_page.dart';
-import 'screens/splash.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+import 'screens/splash.dart';
+import 'values/theme.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  var email = prefs.getString('email');
   runApp(new MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: new HomePage(),
+    home: email == null ? HomePage() : Welcome(),
   ));
 }
 
@@ -26,7 +31,7 @@ class _HomePageState extends State<HomePage> {
     var image = new Image(image: assetsImage);
     return new SplashScreen(
         seconds: 5,
-        navigateAfterSeconds: new AfterSplash(),
+        navigateAfterSeconds: null,
         title: new Text('WeDidIt', style: textStyle),
         image: image,
         gradientBackground: new LinearGradient(
@@ -39,27 +44,5 @@ class _HomePageState extends State<HomePage> {
         photoSize: MediaQuery.of(context).size.height/6,
         onClick: () => print("Flutter Egypt"),
         loaderColor: white);
-  }
-}
-
-class AfterSplash extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      body: new Container(
-        width: MediaQuery.of(context).size.width,
-        child: SafeArea(
-          child: Login(),
-        ),
-        decoration: new BoxDecoration(
-          gradient: new LinearGradient(
-              colors: [bluebackgroundcolor, greenbackgroundcolor],
-              begin: FractionalOffset.topLeft,
-              end: FractionalOffset.bottomRight,
-              stops: [0.0, 1.0],
-              tileMode: TileMode.clamp),
-        ),
-      ),
-    );
   }
 }

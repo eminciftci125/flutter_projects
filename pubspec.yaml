@@ -24,11 +24,15 @@ dependencies:
   cupertino_icons: ^0.1.2
   firebase_core_platform_interface: ^1.0.4
   firebase_auth_platform_interface: ^1.1.7
+  shared_preferences_platform_interface: ^1.0.4
   firebase_core: ^0.4.4+3
   firebase_analytics: ^5.0.11
   firebase_auth: ^0.16.0
   cloud_firestore: ^0.13.5
+  firebase_database: ^3.1.5
   keyboard_visibility: any
+  fluttertoast: ^4.0.1
+  shared_preferences: ^0.5.4
 
 dev_dependencies:
   flutter_test:
