@@ -1,4 +1,4 @@
-import 'package:burayabakarlar/theme.dart';
+import 'package:burayabakarlar/custom_themes.dart';
 import 'package:flutter/material.dart';
 import 'package:splashscreen/splashscreen.dart';
 import 'login_page.dart';
@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
         title: new Text('WeDidIt', style: textStyle),
         image: image,
         gradientBackground: new LinearGradient(
-            colors: [bluebackgroundcolor, greenbackgroundcolor],
+            colors: [blueBackgroundColor, greenBackgroundColor],
             begin: FractionalOffset.topLeft,
             end: FractionalOffset.bottomRight,
             stops: [0.0, 1.0],
@@ -47,6 +47,7 @@ class AfterSplash extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      resizeToAvoidBottomPadding: false,
       body: new Container(
         width: MediaQuery.of(context).size.width,
         child: SafeArea(
@@ -54,7 +55,7 @@ class AfterSplash extends StatelessWidget {
         ),
         decoration: new BoxDecoration(
           gradient: new LinearGradient(
-              colors: [bluebackgroundcolor, greenbackgroundcolor],
+              colors: [blueBackgroundColor, greenBackgroundColor],
               begin: FractionalOffset.topLeft,
               end: FractionalOffset.bottomRight,
               stops: [0.0, 1.0],
