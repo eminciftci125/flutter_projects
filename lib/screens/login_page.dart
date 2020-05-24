@@ -1,10 +1,14 @@
-import 'package:burayabakarlar/screens/welcome.dart';
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../values/constants.dart';
-import '../values/theme.dart';
+import 'constants.dart';
+import 'package:burayabakarlar/custom_themes.dart';
+
+import 'main.dart';
 
 class Login extends StatefulWidget {
   const Login({
@@ -24,7 +28,8 @@ class LoginState extends State<Login> {
   TextEditingController passwordConfirmationController;
   Constants constants;
   bool keyboardOpen = false;
-  bool loginPage = true;
+  //0: Login page , 1: Register page, 2: Forgot password page
+  int _currentPage = 0;
 
   @override
   initState() {
@@ -46,127 +51,138 @@ class LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    final bottom = MediaQuery.of(context).viewInsets.bottom;
     void backToLogin() {
       setState(() {
-        loginPage = true;
+        _currentPage = 0;
       });
     }
 
-    return SingleChildScrollView(
-      reverse: true,
-      child: Padding(
-        padding: EdgeInsets.only(bottom: bottom),
-        child: Container(
-          margin: EdgeInsets.fromLTRB(20, 10, 20, 30),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: keyboardOpen
-                  ? MainAxisAlignment.start
-                  : MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                loginPage == false
-                    ? (customLoginTextField(nameController, Constants.NAME,
-                        Icons.account_box, false))
-                    : Container(),
-                loginPage == false
-                    ? SizedBox(
-                        height: 20,
-                      )
-                    : Container(),
-                customLoginTextField(
-                    usernameController, Constants.EMAIL, Icons.mail, false),
-                SizedBox(
-                  height: 20,
-                ),
-                customLoginTextField(
-                    passwordController, Constants.PASSWORD, Icons.lock, true),
-                loginPage == false
-                    ? SizedBox(
-                        height: 20,
-                      )
-                    : Container(),
-                loginPage == false
-                    ? customLoginTextField(passwordConfirmationController,
-                        Constants.PASSWORD_CONFIRMATION, Icons.lock, true)
-                    : Container(),
-                loginPage == false
-                    ? submitOrLoginButton(Constants.SUBMIT)
-                    : submitOrLoginButton(Constants.LOGIN),
-                keyboardOpen == true
-                    ? Container()
-                    : (loginPage == true)
-                        ? Container(
-                            child: FlatButton(
-                              onPressed: () {
-                                setState(() {
-                                  loginPage = false;
-                                });
-                              },
-                              child: Text(Constants.REGISTER),
-                            ),
-                          )
-                        : (keyboardOpen == false || loginPage == false)
-                            ? Container(
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: FlatButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        loginPage = true;
-                                        usernameController.text = "";
-                                        passwordController.text = "";
-                                        passwordConfirmationController.text =
-                                            "";
-                                        nameController.text = "";
-                                      });
-                                    },
-                                    child: Text(Constants.BACK_TO_LOGIN),
-                                  ),
-                                ),
-                              )
-                            : Container(),
-              ],
-            ),
-          ),
+    if (_currentPage == 0) {
+      return Container(
+        margin: EdgeInsets.all(20),
+        child: Form(
+          key: _formKey,
+          child: loginPage(),
         ),
-      ),
+      );
+    }
+
+    if (_currentPage == 1) {
+      return Container(
+        margin: EdgeInsets.all(20),
+        child: Form(
+          key: _formKey,
+          child: registerPage(),
+        ),
+      );
+    }
+
+    if (_currentPage == 2) {
+      return Container(
+        margin: EdgeInsets.all(20),
+        child: Form(
+          key: _formKey,
+          child: forgotPasswordPage(),
+        ),
+      );
+    }
+  }
+
+  Column loginPage() {
+    return Column(
+      mainAxisAlignment:
+          keyboardOpen ? MainAxisAlignment.start : MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        customLoginTextField(
+            usernameController, Constants.EMAIL, Icons.mail, false),
+        SizedBox(
+          height: 20,
+        ),
+        customLoginTextField(
+            passwordController, Constants.PASSWORD, Icons.lock, true),
+        primaryButtons(Constants.LOGIN),
+        keyboardOpen == true
+            ? Container()
+            : Column(
+                children: <Widget>[
+                  secondaryButtons(Constants.REGISTER, 1),
+                  secondaryButtons(Constants.FORGOT_MY_PASSWORD, 2)
+                ],
+              )
+      ],
     );
   }
 
-  Padding submitOrLoginButton(String type) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 30.0),
-      child: RaisedButton(
-        shape: new RoundedRectangleBorder(
-            borderRadius: new BorderRadius.circular(30.0)),
-        color: white,
-        onPressed: () {
-          if (type == Constants.SUBMIT) {
-            validateAndSubmit();
-            setState(() {
-              usernameController.text = "";
-              passwordController.text = "";
-              passwordConfirmationController.text = "";
-              nameController.text = "";
-            });
-          }
+  Column registerPage() {
+    return Column(
+      mainAxisAlignment:
+          keyboardOpen ? MainAxisAlignment.start : MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        customLoginTextField(
+            nameController, Constants.NAME, Icons.account_box, false),
+        SizedBox(
+          height: 20,
+        ),
+        customLoginTextField(
+            usernameController, Constants.EMAIL, Icons.mail, false),
+        SizedBox(
+          height: 20,
+        ),
+        customLoginTextField(
+            passwordController, Constants.PASSWORD, Icons.lock, true),
+        SizedBox(
+          height: 20,
+        ),
+        customLoginTextField(passwordController,
+            Constants.PASSWORD_CONFIRMATION, Icons.lock, true),
+        primaryButtons(Constants.REGISTER),
+        keyboardOpen == true
+            ? Container()
+            : secondaryButtons(Constants.BACK_TO_LOGIN, 0)
+      ],
+    );
+  }
 
-          if (type == Constants.LOGIN) {
-            validateAndLogin();
-          }
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => Welcome()),
-          );
-        },
-        child: type == Constants.SUBMIT
-            ? Text(Constants.SUBMIT)
-            : Text(Constants.LOGIN),
-      ),
+  Column forgotPasswordPage() {
+    return Column(
+      mainAxisAlignment:
+          keyboardOpen ? MainAxisAlignment.start : MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        customLoginTextField(
+            usernameController, Constants.EMAIL, Icons.mail, false),
+        primaryButtons(Constants.RESET_PASSWORD),
+        keyboardOpen == true
+            ? Container()
+            : secondaryButtons(Constants.BACK_TO_LOGIN, 0)
+      ],
+    );
+  }
+
+  Padding primaryButtons(String type) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 30.0),
+      child: RaisedButton(
+          shape: new RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(30.0)),
+          color: white,
+          onPressed: () {
+            if (type == Constants.SUBMIT) {
+              validateAndSubmit();
+              clearFields();
+            }
+
+            if (type == Constants.LOGIN) {
+              validateAndLogin();
+            }
+
+            if (type == Constants.RESET_PASSWORD) {
+              validateAndResetPassword();
+            }
+          },
+          child: Text(type)),
     );
   }
 
@@ -205,6 +221,24 @@ class LoginState extends State<Login> {
     );
   }
 
+  Container secondaryButtons(String text, int pageNumber) {
+    return Container(
+      child: Padding(
+        padding: text == Constants.FORGOT_MY_PASSWORD
+            ? const EdgeInsets.all(5)
+            : const EdgeInsets.symmetric(vertical: 0.0),
+        child: FlatButton(
+          onPressed: () {
+            setState(() {
+              _currentPage = pageNumber;
+            });
+          },
+          child: Text(text),
+        ),
+      ),
+    );
+  }
+
   String validateEmail(String value) {
     Pattern pattern = Constants.VALID_MAIL_PATTERN;
     RegExp regex = new RegExp(pattern);
@@ -238,6 +272,34 @@ class LoginState extends State<Login> {
     }
 
     return null;
+  }
+
+  void clearFields() {
+    setState(() {
+      usernameController.text = "";
+      passwordController.text = "";
+      passwordConfirmationController.text = "";
+      nameController.text = "";
+    });
+  }
+
+  void validateAndResetPassword() async {
+    try {
+      FocusScope.of(context).requestFocus(FocusNode());
+
+      if (!_formKey.currentState.validate()) {
+        return;
+      }
+
+      await _auth.sendPasswordResetEmail(email: usernameController.text);
+
+      clearFields();
+      Fluttertoast.showToast(msg: Constants.RESET_LINK_SENT);
+    } catch (e) {
+      if (e.code == Constants.USER_NOT_FOUND) {
+        Fluttertoast.showToast(msg: Constants.MSG_EMAIL_NOT_FOUND);
+      }
+    }
   }
 
   void validateAndLogin() async {
@@ -289,3 +351,5 @@ class LoginState extends State<Login> {
     } catch (e) {}
   }
 }
+
+class Welcome {}
