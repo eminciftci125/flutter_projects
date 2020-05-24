@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-Color bluebackgroundcolor = _colorFromHex("#42b9dd");
-Color greenbackgroundcolor = _colorFromHex("#74c44c");
+Color blueBackgroundColor = _colorFromHex("#42b9dd");
+Color greenBackgroundColor = _colorFromHex("#74c44c");
+Color loginIconsColor = Colors.black54;
 Color white = Colors.white;
 
 TextStyle textStyle =

@@ -7,6 +7,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'login_page.dart';
+
 class SplashScreen extends StatefulWidget {
   final int seconds;
   final Text title;
@@ -92,24 +94,24 @@ class _SplashScreenState extends State<SplashScreen> {
                 color: widget.backgroundColor,
               ),
               child: new Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Container(
-                      child: new Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      new CircleAvatar(
-                        backgroundColor: Colors.transparent,
-                        child: new Container(child: widget.image),
-                        radius: widget.photoSize,
-                      ),
-                      new Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
-                      ),
-                      widget.title
-                    ],
-                  )),
+                  SingleChildScrollView(
+                    child: Container(
+                      height: MediaQuery.of(context).size.height/2.5,
+                        child: new Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        widget.image,
+                        new Padding(
+                          padding: const EdgeInsets.only(top: 10.0),
+                        ),
+                        widget.title
+                      ],
+                    )),
+                  ),
+                  SizedBox(height: 20,),
                   Expanded(
                     child: isLoading
                         ? Column(
@@ -125,110 +127,7 @@ class _SplashScreenState extends State<SplashScreen> {
                               widget.loadingText
                             ],
                           )
-                        : AnimatedContainer(
-                            curve: Curves.easeOut,
-                            duration: Duration(
-                              milliseconds: 400,
-                            ),
-                            width: double.infinity,
-                            height: double.infinity,
-                            alignment: _childAlignment,
-                            child: new Container(
-                              padding: EdgeInsets.all(40),
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: <Widget>[
-                                    TextFormField(
-                                      keyboardType: TextInputType.text,
-                                      controller: _usernameController,
-                                      autofocus: false,
-                                      validator: (value) =>
-                                          validateEmail(value) == null
-                                              ? 'Invalid email'
-                                              : null,
-                                      decoration: InputDecoration(
-                                        hintText: 'Email',
-                                        icon: new Icon(
-                                          Icons.mail,
-                                          color: Colors.black54,
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 30,
-                                    ),
-                                    TextFormField(
-                                      controller: _passwordController,
-                                      keyboardType: TextInputType.text,
-                                      obscureText: true,
-                                      autofocus: false,
-                                      decoration: InputDecoration(
-                                        hintText: "Şifre",
-                                        icon: new Icon(
-                                          Icons.lock,
-                                          color: Colors.black54,
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 30.0),
-                                      child: RaisedButton(
-                                        shape: new RoundedRectangleBorder(
-                                            borderRadius:
-                                                new BorderRadius.circular(
-                                                    30.0)),
-                                        color: Colors.white,
-                                        onPressed: () {
-                                          validateAndLogin();
-                                        },
-                                        child: Text('Giriş Yap'),
-                                      ),
-                                    ),
-                                    _keyboardOpen == false
-                                        ? Container(
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 50.0),
-                                              child: FlatButton(
-                                                onPressed: () async {
-                                                  setState(() {
-                                                    //showProgress = true;
-                                                  });
-                                                  try {
-                                                    await _auth
-                                                        .createUserWithEmailAndPassword(
-                                                            email:
-                                                                _usernameController
-                                                                    .text,
-                                                            password:
-                                                                _passwordController
-                                                                    .text);
-
-                                                    SharedPreferences prefs =
-                                                        await SharedPreferences
-                                                            .getInstance();
-                                                    prefs.setString(
-                                                        'email',
-                                                        _usernameController
-                                                            .text);
-                                                  } catch (e) {}
-                                                },
-                                                child: Text(
-                                                  'Kaydol',
-                                                ),
-                                              ),
-                                            ),
-                                          )
-                                        : Container(),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
+                        : Login(),
                   )
                 ],
               ),

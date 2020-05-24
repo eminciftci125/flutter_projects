@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
         title: new Text('WeDidIt', style: textStyle),
         image: image,
         gradientBackground: new LinearGradient(
-            colors: [bluebackgroundcolor, greenbackgroundcolor],
+            colors: [blueBackgroundColor, greenBackgroundColor],
             begin: FractionalOffset.topLeft,
             end: FractionalOffset.bottomRight,
             stops: [0.0, 1.0],

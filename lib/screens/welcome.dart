@@ -83,7 +83,7 @@ class _Welcome extends State<Welcome> {
                       ),
                     ),
                     ListTile(
-                     
+
                       title: TextFormField(
                         decoration: InputDecoration(
                           hintText: 'günlük içilen',
@@ -147,6 +147,7 @@ class Questions {
   String _boxprice;
   String _boxcigarettescount;
   String _dailycigarettescount;
+  int _time;
 
   Questions(
       this._boxprice, this._boxcigarettescount, this._dailycigarettescount);
@@ -159,6 +160,7 @@ class Questions {
 
   toJson() {
     return {
+      "time": _time,
       "bp": _boxprice,
       "bcc": _boxcigarettescount,
       "dcc": _dailycigarettescount,
