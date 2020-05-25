@@ -3,12 +3,12 @@ class Constants {
   static const String EMAIL = "Email";
   static const String PASSWORD = "Password";
   static const String PASSWORD_CONFIRMATION = "Password Confirmation";
-  static const String LOGIN = "LOGIN";
+  static const String LOGIN = "Login";
   static const String REGISTER = "Register";
   static const String SUBMIT = "SUBMIT";
   static const String BACK_TO_LOGIN = "Back to Login";
   static const String FORGOT_MY_PASSWORD = "Forgot my password";
-  static const String RESET_PASSWORD = "RESET PASSWORD";
+  static const String RESET_PASSWORD = "Reset Password";
 
   static const String INVALID_EMAIL = "ERROR_INVALID_EMAIL";
   static const String USER_NOT_FOUND = "ERROR_USER_NOT_FOUND";

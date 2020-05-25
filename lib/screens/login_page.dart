@@ -1,14 +1,9 @@
-import 'dart:math';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:burayabakarlar/screens/welcome.dart';
+import 'package:burayabakarlar/values/constants.dart';
+import 'package:burayabakarlar/values/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'constants.dart';
-import 'package:burayabakarlar/custom_themes.dart';
-
-import 'main.dart';
 
 class Login extends StatefulWidget {
   const Login({
@@ -22,171 +17,142 @@ class Login extends StatefulWidget {
 class LoginState extends State<Login> {
   final _auth = FirebaseAuth.instance;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  TextEditingController nameController;
-  TextEditingController usernameController;
-  TextEditingController passwordController;
-  TextEditingController passwordConfirmationController;
-  Constants constants;
-  bool keyboardOpen = false;
-  //0: Login page , 1: Register page, 2: Forgot password page
+  TextEditingController _nameController;
+  TextEditingController _usernameController;
+  TextEditingController _passwordController;
+  TextEditingController _passwordConfirmationController;
+  bool _result;
   int _currentPage = 0;
 
   @override
   initState() {
-    nameController = new TextEditingController();
-    usernameController = new TextEditingController();
-    passwordController = new TextEditingController();
-    passwordConfirmationController = new TextEditingController();
-
-    KeyboardVisibilityNotification().addNewListener(
-      onChange: (bool visible) {
-        setState(() {
-          keyboardOpen = visible;
-        });
-      },
-    );
-
+    _nameController = new TextEditingController();
+    _usernameController = new TextEditingController();
+    _passwordController = new TextEditingController();
+    _passwordConfirmationController = new TextEditingController();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    void backToLogin() {
-      setState(() {
-        _currentPage = 0;
-      });
+    Column childColumn;
+    switch (_currentPage) {
+      case 0:
+        childColumn = _loginPage();
+        break;
+      case 1:
+        childColumn = _registerPage();
+        break;
+      case 2:
+        childColumn = _forgotPasswordPage();
+        break;
+      default:
+        childColumn = new Column();
     }
-
-    if (_currentPage == 0) {
-      return Container(
-        margin: EdgeInsets.all(20),
-        child: Form(
-          key: _formKey,
-          child: loginPage(),
-        ),
-      );
-    }
-
-    if (_currentPage == 1) {
-      return Container(
-        margin: EdgeInsets.all(20),
-        child: Form(
-          key: _formKey,
-          child: registerPage(),
-        ),
-      );
-    }
-
-    if (_currentPage == 2) {
-      return Container(
-        margin: EdgeInsets.all(20),
-        child: Form(
-          key: _formKey,
-          child: forgotPasswordPage(),
-        ),
-      );
-    }
+    return Container(
+      margin: EdgeInsets.all(40),
+      child: Form(
+        key: _formKey,
+        child: childColumn,
+      ),
+    );
   }
 
-  Column loginPage() {
+  Column _loginPage() {
     return Column(
-      mainAxisAlignment:
-          keyboardOpen ? MainAxisAlignment.start : MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        customLoginTextField(
-            usernameController, Constants.EMAIL, Icons.mail, false),
+        _customLoginTextField(
+            _usernameController, Constants.EMAIL, Icons.mail, false),
         SizedBox(
           height: 20,
         ),
-        customLoginTextField(
-            passwordController, Constants.PASSWORD, Icons.lock, true),
-        primaryButtons(Constants.LOGIN),
-        keyboardOpen == true
-            ? Container()
-            : Column(
-                children: <Widget>[
-                  secondaryButtons(Constants.REGISTER, 1),
-                  secondaryButtons(Constants.FORGOT_MY_PASSWORD, 2)
-                ],
-              )
+        _customLoginTextField(
+            _passwordController, Constants.PASSWORD, Icons.lock, true),
+        _primaryButtons(Constants.LOGIN),
+        Column(
+          children: <Widget>[
+
+            _secondaryButtons(Constants.FORGOT_MY_PASSWORD, 2),
+            _secondaryButtons(Constants.REGISTER, 1),
+          ],
+        )
       ],
     );
   }
 
-  Column registerPage() {
+  Column _registerPage() {
     return Column(
-      mainAxisAlignment:
-          keyboardOpen ? MainAxisAlignment.start : MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        customLoginTextField(
-            nameController, Constants.NAME, Icons.account_box, false),
+        _customLoginTextField(
+            _nameController, Constants.NAME, Icons.account_box, false),
         SizedBox(
           height: 20,
         ),
-        customLoginTextField(
-            usernameController, Constants.EMAIL, Icons.mail, false),
+        _customLoginTextField(
+            _usernameController, Constants.EMAIL, Icons.mail, false),
         SizedBox(
           height: 20,
         ),
-        customLoginTextField(
-            passwordController, Constants.PASSWORD, Icons.lock, true),
+        _customLoginTextField(
+            _passwordController, Constants.PASSWORD, Icons.lock, true),
         SizedBox(
           height: 20,
         ),
-        customLoginTextField(passwordController,
+        _customLoginTextField(_passwordController,
             Constants.PASSWORD_CONFIRMATION, Icons.lock, true),
-        primaryButtons(Constants.REGISTER),
-        keyboardOpen == true
-            ? Container()
-            : secondaryButtons(Constants.BACK_TO_LOGIN, 0)
+        _primaryButtons(Constants.REGISTER),
+        _secondaryButtons(Constants.BACK_TO_LOGIN, 0)
       ],
     );
   }
 
-  Column forgotPasswordPage() {
+  Column _forgotPasswordPage() {
     return Column(
-      mainAxisAlignment:
-          keyboardOpen ? MainAxisAlignment.start : MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        customLoginTextField(
-            usernameController, Constants.EMAIL, Icons.mail, false),
-        primaryButtons(Constants.RESET_PASSWORD),
-        keyboardOpen == true
-            ? Container()
-            : secondaryButtons(Constants.BACK_TO_LOGIN, 0)
+        _customLoginTextField(
+            _usernameController, Constants.EMAIL, Icons.mail, false),
+        _primaryButtons(Constants.RESET_PASSWORD),
+        _secondaryButtons(Constants.BACK_TO_LOGIN, 0)
       ],
     );
   }
 
-  Padding primaryButtons(String type) {
+  Padding _primaryButtons(String type) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 30.0),
+      padding: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 0),
       child: RaisedButton(
           shape: new RoundedRectangleBorder(
               borderRadius: new BorderRadius.circular(30.0)),
-          color: white,
+          color: darkBlue,
           onPressed: () {
             if (type == Constants.SUBMIT) {
-              validateAndSubmit();
-              clearFields();
+              if (_validateAndSubmit() != null && _result) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Welcome()),
+                );
+              }
             }
 
             if (type == Constants.LOGIN) {
-              validateAndLogin();
+              _validateAndLogin();
             }
 
             if (type == Constants.RESET_PASSWORD) {
-              validateAndResetPassword();
+              _validateAndResetPassword();
             }
           },
-          child: Text(type)),
+          child: Text(type, style: whiteTextFormStyle,)),
     );
   }
 
-  TextFormField customLoginTextField(TextEditingController _controller,
+  TextFormField _customLoginTextField(TextEditingController _controller,
       String _hintText, IconData _iconData, bool _obscureText) {
     return TextFormField(
       keyboardType: TextInputType.text,
@@ -195,24 +161,32 @@ class LoginState extends State<Login> {
       autofocus: false,
       validator: (text) {
         if (_hintText == Constants.EMAIL) {
-          return validateEmail(text);
+          return _validateEmail(text);
         }
 
         if (_hintText == Constants.PASSWORD) {
-          return validatePassword(text);
+          return _validatePassword(text);
         }
 
         if (_hintText == Constants.NAME) {
-          return validateName(text);
+          return _validateName(text);
         }
 
         if (_hintText == Constants.PASSWORD_CONFIRMATION) {
-          return validatePasswordConfirmation(text);
+          return _validatePasswordConfirmation(text);
         }
         return null;
       },
+      style: blueTextFormStyle,
       decoration: InputDecoration(
         hintText: _hintText,
+        hintStyle: whiteTextFormStyle,
+        enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: white),
+        ),
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: cyan),
+        ),
         icon: Icon(
           _iconData,
           color: loginIconsColor,
@@ -221,25 +195,40 @@ class LoginState extends State<Login> {
     );
   }
 
-  Container secondaryButtons(String text, int pageNumber) {
+  Container _secondaryButtons(String text, int pageNumber) {
+    var _padding;
+    var _style;
+    var _highlightColor;
+    if (text == Constants.FORGOT_MY_PASSWORD) {
+      _padding = const EdgeInsets.all(5);
+      _style = formButtonTextStyle;
+      _highlightColor = white;
+    } else {
+      _padding = const EdgeInsets.symmetric(vertical: 0.0);
+       _style = whiteTextFormStyle;
+      _highlightColor = darkBlue;
+    }
+
     return Container(
       child: Padding(
-        padding: text == Constants.FORGOT_MY_PASSWORD
-            ? const EdgeInsets.all(5)
-            : const EdgeInsets.symmetric(vertical: 0.0),
+        padding: _padding,
         child: FlatButton(
+          shape: new RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(30.0)),
+            splashColor: Colors.grey,
+            highlightColor: _highlightColor,
           onPressed: () {
             setState(() {
               _currentPage = pageNumber;
             });
           },
-          child: Text(text),
+          child: Text(text, style: _style,),
         ),
       ),
     );
   }
 
-  String validateEmail(String value) {
+  String _validateEmail(String value) {
     Pattern pattern = Constants.VALID_MAIL_PATTERN;
     RegExp regex = new RegExp(pattern);
     if (!regex.hasMatch(value)) {
@@ -249,14 +238,14 @@ class LoginState extends State<Login> {
     return null;
   }
 
-  String validatePassword(String value) {
+  String _validatePassword(String value) {
     if (value.length < 6 || value.length > 16) {
       return Constants.INVALID_PASSWORD;
     }
     return null;
   }
 
-  String validateName(String value) {
+  String _validateName(String value) {
     if (value.length == 0) {
       return Constants.EMPTY_NAME;
     } else if (value.length > 20) {
@@ -266,34 +255,31 @@ class LoginState extends State<Login> {
     return null;
   }
 
-  String validatePasswordConfirmation(String value) {
-    if (value != passwordController.text) {
+  String _validatePasswordConfirmation(String value) {
+    if (value != _passwordController.text) {
       return Constants.PASSWORD_MATCH_ERROR;
     }
 
     return null;
   }
 
-  void clearFields() {
+  void _clearFields() {
     setState(() {
-      usernameController.text = "";
-      passwordController.text = "";
-      passwordConfirmationController.text = "";
-      nameController.text = "";
+      _usernameController.text = "";
+      _passwordController.text = "";
+      _passwordConfirmationController.text = "";
+      _nameController.text = "";
     });
   }
 
-  void validateAndResetPassword() async {
+  void _validateAndResetPassword() async {
     try {
-      FocusScope.of(context).requestFocus(FocusNode());
-
       if (!_formKey.currentState.validate()) {
         return;
       }
 
-      await _auth.sendPasswordResetEmail(email: usernameController.text);
-
-      clearFields();
+      await _auth.sendPasswordResetEmail(email: _usernameController.text);
+      _clearFields();
       Fluttertoast.showToast(msg: Constants.RESET_LINK_SENT);
     } catch (e) {
       if (e.code == Constants.USER_NOT_FOUND) {
@@ -302,54 +288,38 @@ class LoginState extends State<Login> {
     }
   }
 
-  void validateAndLogin() async {
+  Future<bool> _validateAndLogin() async {
     try {
-      FocusScope.of(context).requestFocus(FocusNode());
-
       if (!_formKey.currentState.validate()) {
-        return;
+        return false;
       }
-      var _authUser = await _auth.signInWithEmailAndPassword(
-          email: usernameController.text, password: passwordController.text);
-
-      print(_authUser);
+      await _auth.signInWithEmailAndPassword(
+          email: _usernameController.text, password: _passwordController.text);
     } catch (e) {
       switch (e.code) {
         case Constants.INVALID_EMAIL:
-          {
-            Fluttertoast.showToast(msg: Constants.MSG_INVALID_EMAIL);
-            break;
-          }
+          Fluttertoast.showToast(msg: Constants.MSG_INVALID_EMAIL);
+          break;
         case Constants.USER_NOT_FOUND:
-          {
-            Fluttertoast.showToast(msg: Constants.MSG_USER_NOT_FOUND);
-            break;
-          }
+          Fluttertoast.showToast(msg: Constants.MSG_USER_NOT_FOUND);
+          break;
         case Constants.WRONG_PASSWORD:
-          {
-            Fluttertoast.showToast(msg: Constants.MSG_WRONG_PASSWORD);
-            break;
-          }
+          Fluttertoast.showToast(msg: Constants.MSG_WRONG_PASSWORD);
+          break;
         default:
           Fluttertoast.showToast(msg: Constants.MSG_ERROR_OCCURED);
       }
     }
   }
 
-  void validateAndSubmit() async {
+  Future<bool> _validateAndSubmit() async {
     try {
-      FocusScope.of(context).requestFocus(FocusNode());
-
       if (!_formKey.currentState.validate()) {
-        return;
+        return false;
       }
-
-      AuthResult result = await _auth.createUserWithEmailAndPassword(
-          email: usernameController.text, password: passwordController.text);
-
-      print(result);
+      await _auth.createUserWithEmailAndPassword(
+          email: _usernameController.text, password: _passwordController.text);
+      _clearFields();
     } catch (e) {}
   }
 }
-
-class Welcome {}
