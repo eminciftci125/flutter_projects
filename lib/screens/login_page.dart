@@ -4,6 +4,7 @@ import 'package:burayabakarlar/values/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   const Login({
@@ -129,7 +130,7 @@ class LoginState extends State<Login> {
           shape: new RoundedRectangleBorder(
               borderRadius: new BorderRadius.circular(30.0)),
           color: darkBlue,
-          onPressed: () {
+          onPressed: () async {
             if (type == Constants.LOGIN) {
               _validateAndLogin();
             }
@@ -141,6 +142,7 @@ class LoginState extends State<Login> {
             if (type == Constants.RESET_PASSWORD) {
               _validateAndResetPassword();
             }
+
           },
           child: Text(
             type,
@@ -290,12 +292,18 @@ class LoginState extends State<Login> {
 
   Future<bool> _validateAndLogin() async {
     try {
-      FocusScope.of(context).requestFocus(FocusNode());
       if (!_formKey.currentState.validate()) {
         return false;
       }
       await _auth.signInWithEmailAndPassword(
           email: _usernameController.text, password: _passwordController.text);
+      SharedPreferences prefs =
+      await SharedPreferences
+          .getInstance();
+      prefs.setString(
+          'email',
+          _usernameController
+              .text);
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => Welcome()),
