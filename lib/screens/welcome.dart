@@ -10,13 +10,18 @@ class Welcome extends StatefulWidget {
   _Welcome createState() => _Welcome();
 }
 
-class _Welcome extends State<Welcome> {
+class _Welcome extends State<Welcome> with TickerProviderStateMixin {
   List<Questions> questions = List();
   Questions question;
   DatabaseReference questionRef;
   TextEditingController _numberOfCigarettesSmokedPerDay;
   TextEditingController _numberOfCigarettesInPack;
   TextEditingController _priceOf;
+  AnimationController _controller;
+  Animation<Offset> _offsetFloatRightOne;
+  Animation<Offset> _offsetFloatRightTwo;
+  Animation<Offset> _offsetFloatLeftOne;
+  Animation<Offset> _offsetFloatLeftTwo;
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -29,6 +34,26 @@ class _Welcome extends State<Welcome> {
     questionRef = database.reference().child('questions');
     questionRef.onChildAdded.listen(_onEntryAdded);
     questionRef.onChildChanged.listen(_onEntryChanged);
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    );
+
+    _offsetFloatRightOne =
+        Tween<Offset>(begin: Offset(4.0, 0.0), end: Offset.zero)
+            .animate(_controller);
+    _offsetFloatLeftOne =
+        Tween<Offset>(begin: Offset(-5.0, 0.0), end: Offset.zero)
+            .animate(_controller);
+    _offsetFloatRightTwo =
+        Tween<Offset>(begin: Offset(6.0, 0.0), end: Offset.zero)
+            .animate(_controller);
+    _offsetFloatLeftTwo =
+        Tween<Offset>(begin: Offset(-7.0, 0.0), end: Offset.zero)
+            .animate(_controller);
+
+    _controller.forward();
   }
 
   void handleSubmit() {
@@ -66,22 +91,68 @@ class _Welcome extends State<Welcome> {
           new GradientAppBar("weDidIt"),
           Container(
             padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-            width: double.infinity,
-            child: Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0)),
-              elevation: 4.0,
-              child: Padding(
-                  padding: new EdgeInsets.all(15.0),
-                  child: Row(
-                    children: <Widget>[
-                      Text("Number of cigarettes smoked per day: "),
-                      TextField(
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(),
-                      ),
-                    ],
-                  )),
+            child: SlideTransition(
+              position: _offsetFloatRightOne,
+              child: Card(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+                elevation: 4.0,
+                child: Padding(
+                    padding: new EdgeInsets.all(10.0),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          flex: 7,
+                          child: Text("Number of cigarettes smoked per day: "),
+                        ),
+                        Expanded(child: TextField())
+                      ],
+                    )),
+              ),
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+            child: SlideTransition(
+              position: _offsetFloatLeftOne,
+              child: Card(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+                elevation: 4.0,
+                child: Padding(
+                    padding: new EdgeInsets.all(10.0),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          flex: 7,
+                          child: Text("Number of cigarettes in a pack: "),
+                        ),
+                        Expanded(child: TextField())
+                      ],
+                    )),
+              ),
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+            child: SlideTransition(
+              position: _offsetFloatRightTwo,
+              child: Card(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+                elevation: 4.0,
+                child: Padding(
+                    padding: new EdgeInsets.all(10.0),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          flex: 7,
+                          child: Text("Price of a pack of cigarettes: "),
+                        ),
+                        Expanded(child: TextField())
+                      ],
+                    )),
+              ),
             ),
           ),
         ],

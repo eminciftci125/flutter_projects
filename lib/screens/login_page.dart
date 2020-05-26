@@ -14,13 +14,15 @@ class Login extends StatefulWidget {
   LoginState createState() => LoginState();
 }
 
-class LoginState extends State<Login> {
+class LoginState extends State<Login> with TickerProviderStateMixin {
   final _auth = FirebaseAuth.instance;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController _nameController;
   TextEditingController _usernameController;
   TextEditingController _passwordController;
   TextEditingController _passwordConfirmationController;
+  AnimationController _controller;
+  Animation<Offset> _offsetFloat;
   bool _result;
   int _currentPage = 0;
 
@@ -31,6 +33,16 @@ class LoginState extends State<Login> {
     _passwordController = new TextEditingController();
     _passwordConfirmationController = new TextEditingController();
     super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    );
+
+    _offsetFloat = Tween<Offset>(begin: Offset(0.0, 0.3), end: Offset.zero)
+        .animate(_controller);
+
+    _controller.forward();
   }
 
   @override
@@ -49,11 +61,14 @@ class LoginState extends State<Login> {
       default:
         childColumn = new Column();
     }
-    return Container(
-      margin: EdgeInsets.all(40),
-      child: Form(
-        key: _formKey,
-        child: childColumn,
+    return SlideTransition(
+      position: _offsetFloat,
+      child: Container(
+        margin: EdgeInsets.all(40),
+        child: Form(
+          key: _formKey,
+          child: childColumn,
+        ),
       ),
     );
   }
