@@ -3,6 +3,7 @@ import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:burayabakarlar/values/gradient_app_bar.dart';
 
 class Welcome extends StatefulWidget {
   @override
@@ -13,12 +14,16 @@ class _Welcome extends State<Welcome> {
   List<Questions> questions = List();
   Questions question;
   DatabaseReference questionRef;
+  TextEditingController _numberOfCigarettesSmokedPerDay;
+  TextEditingController _numberOfCigarettesInPack;
+  TextEditingController _priceOf;
+
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    question = Questions("","","");
+    question = Questions("", "", "");
     final FirebaseDatabase database = FirebaseDatabase
         .instance; //Rather then just writing FirebaseDatabase(), get the instance.
     questionRef = database.reference().child('questions');
@@ -55,92 +60,35 @@ class _Welcome extends State<Welcome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     body: Column(
-       mainAxisAlignment: MainAxisAlignment.center,
+      body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Flexible(
-            flex: 0,
-            child: Center(
-              child: Form(
-                key: formKey,
-                child: Flex(
-                  direction: Axis.vertical,
-                  children: <Widget>[
-                    ListTile(
-                     
-                      title: TextFormField(
-                        decoration: InputDecoration(
-                          hintText: 'Kutuda kac smoke',
-                          icon: new Icon(
-                            Icons.add_circle,
-                            color: Colors.black54,
-                          ),
-                        ),
-                        initialValue: "",
-                        onSaved: (val) => question._boxcigarettescount = val,
-                        validator: (val) => val == "" ? val : null,
+          new GradientAppBar("weDidIt"),
+          Container(
+            padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+            width: double.infinity,
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)),
+              elevation: 4.0,
+              child: Padding(
+                  padding: new EdgeInsets.all(15.0),
+                  child: Row(
+                    children: <Widget>[
+                      Text("Number of cigarettes smoked per day: "),
+                      TextField(
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(),
                       ),
-                    ),
-                    ListTile(
-
-                      title: TextFormField(
-                        decoration: InputDecoration(
-                          hintText: 'günlük içilen',
-                          icon: new Icon(
-                            Icons.add_circle,
-                            color: Colors.black54,
-                          ),
-                        ),
-                        initialValue: '',
-                        onSaved: (val) => question._dailycigarettescount = val,
-                        validator: (val) => val == "" ? val : null,
-                      ),
-                    ),  ListTile(
-                     
-                      title: TextFormField(
-                        decoration: InputDecoration(
-                          hintText: 'Kutu Fiyat',
-                          icon: new Icon(
-                            Icons.add_circle,
-                            color: Colors.black54,
-                          ),
-                        ),
-                        initialValue: '',
-                        onSaved: (val) => question._boxprice = val,
-                        validator: (val) => val == "" ? val : null,
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.send),
-                      onPressed: () {
-                        handleSubmit();
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Flexible(
-            child: FirebaseAnimatedList(
-              query: questionRef,
-              itemBuilder: (BuildContext context, DataSnapshot snapshot,
-                  Animation<double> animation, int index) {
-                return new ListTile(
-                  leading: Icon(Icons.message),
-                  title: Text(questions[index]._boxprice.toString()),
-                  subtitle: Text(questions[index]._boxcigarettescount.toString()),
-                );
-              },
+                    ],
+                  )),
             ),
           ),
         ],
       ),
     );
   }
-  }
-
+}
 
 class Questions {
   String key;
@@ -154,7 +102,7 @@ class Questions {
 
   Questions.fromSnapshot(DataSnapshot snapshot)
       : key = snapshot.key,
-       _boxprice =  snapshot.value["bp"],
+        _boxprice = snapshot.value["bp"],
         _boxcigarettescount = snapshot.value["bcc"],
         _dailycigarettescount = snapshot.value["dcc"];
 

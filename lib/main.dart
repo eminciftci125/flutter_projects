@@ -27,10 +27,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    var assetsImage = new AssetImage('assets/images/ikon.png'); //<- Creates an object that fetches an image.
+    var assetsImage = new AssetImage(
+        'assets/images/ikon.png'); //<- Creates an object that fetches an image.
     var image = new Image(image: assetsImage);
     return new SplashScreen(
-        seconds: 5,
+        seconds: 1,
         navigateAfterSeconds: null,
         title: new Text('WeDidIt', style: textStyle),
         image: image,
@@ -41,7 +42,7 @@ class _HomePageState extends State<HomePage> {
             stops: [0.0, 1.0],
             tileMode: TileMode.clamp),
         styleTextUnderTheLoader: new TextStyle(),
-        photoSize: MediaQuery.of(context).size.height/6,
+        photoSize: MediaQuery.of(context).size.height / 6,
         onClick: () => print("Flutter Egypt"),
         loaderColor: white);
   }

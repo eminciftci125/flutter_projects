@@ -73,7 +73,6 @@ class LoginState extends State<Login> {
         _primaryButtons(Constants.LOGIN),
         Column(
           children: <Widget>[
-
             _secondaryButtons(Constants.FORGOT_MY_PASSWORD, 2),
             _secondaryButtons(Constants.REGISTER, 1),
           ],
@@ -102,7 +101,7 @@ class LoginState extends State<Login> {
         SizedBox(
           height: 20,
         ),
-        _customLoginTextField(_passwordController,
+        _customLoginTextField(_passwordConfirmationController,
             Constants.PASSWORD_CONFIRMATION, Icons.lock, true),
         _primaryButtons(Constants.REGISTER),
         _secondaryButtons(Constants.BACK_TO_LOGIN, 0)
@@ -131,24 +130,22 @@ class LoginState extends State<Login> {
               borderRadius: new BorderRadius.circular(30.0)),
           color: darkBlue,
           onPressed: () {
-            if (type == Constants.SUBMIT) {
-              if (_validateAndSubmit() != null && _result) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Welcome()),
-                );
-              }
-            }
-
             if (type == Constants.LOGIN) {
               _validateAndLogin();
+            }
+
+            if (type == Constants.REGISTER) {
+              _validateAndSubmit();
             }
 
             if (type == Constants.RESET_PASSWORD) {
               _validateAndResetPassword();
             }
           },
-          child: Text(type, style: whiteTextFormStyle,)),
+          child: Text(
+            type,
+            style: whiteTextFormStyle,
+          )),
     );
   }
 
@@ -160,22 +157,18 @@ class LoginState extends State<Login> {
       controller: _controller,
       autofocus: false,
       validator: (text) {
-        if (_hintText == Constants.EMAIL) {
-          return _validateEmail(text);
+        switch (_hintText) {
+          case Constants.EMAIL:
+            return _validateEmail(text);
+          case Constants.PASSWORD:
+            return _validatePassword(text);
+          case Constants.NAME:
+            return _validateName(text);
+          case Constants.PASSWORD_CONFIRMATION:
+            return _validatePasswordConfirmation(text);
+          default:
+            return null;
         }
-
-        if (_hintText == Constants.PASSWORD) {
-          return _validatePassword(text);
-        }
-
-        if (_hintText == Constants.NAME) {
-          return _validateName(text);
-        }
-
-        if (_hintText == Constants.PASSWORD_CONFIRMATION) {
-          return _validatePasswordConfirmation(text);
-        }
-        return null;
       },
       style: blueTextFormStyle,
       decoration: InputDecoration(
@@ -205,7 +198,7 @@ class LoginState extends State<Login> {
       _highlightColor = white;
     } else {
       _padding = const EdgeInsets.symmetric(vertical: 0.0);
-       _style = whiteTextFormStyle;
+      _style = whiteTextFormStyle;
       _highlightColor = darkBlue;
     }
 
@@ -213,16 +206,21 @@ class LoginState extends State<Login> {
       child: Padding(
         padding: _padding,
         child: FlatButton(
+          hoverColor: Colors.white,
           shape: new RoundedRectangleBorder(
               borderRadius: new BorderRadius.circular(30.0)),
-            splashColor: Colors.grey,
-            highlightColor: _highlightColor,
+          splashColor: Colors.grey,
+          highlightColor: _highlightColor,
           onPressed: () {
             setState(() {
               _currentPage = pageNumber;
             });
+            _clearFields();
           },
-          child: Text(text, style: _style,),
+          child: Text(
+            text,
+            style: _style,
+          ),
         ),
       ),
     );
@@ -264,6 +262,7 @@ class LoginState extends State<Login> {
   }
 
   void _clearFields() {
+    _formKey.currentState.reset();
     setState(() {
       _usernameController.text = "";
       _passwordController.text = "";
@@ -274,6 +273,7 @@ class LoginState extends State<Login> {
 
   void _validateAndResetPassword() async {
     try {
+      FocusScope.of(context).requestFocus(FocusNode());
       if (!_formKey.currentState.validate()) {
         return;
       }
@@ -290,30 +290,38 @@ class LoginState extends State<Login> {
 
   Future<bool> _validateAndLogin() async {
     try {
+      FocusScope.of(context).requestFocus(FocusNode());
       if (!_formKey.currentState.validate()) {
         return false;
       }
       await _auth.signInWithEmailAndPassword(
           email: _usernameController.text, password: _passwordController.text);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Welcome()),
+      );
+      return true;
     } catch (e) {
       switch (e.code) {
         case Constants.INVALID_EMAIL:
           Fluttertoast.showToast(msg: Constants.MSG_INVALID_EMAIL);
-          break;
+          return false;
         case Constants.USER_NOT_FOUND:
           Fluttertoast.showToast(msg: Constants.MSG_USER_NOT_FOUND);
-          break;
+          return false;
         case Constants.WRONG_PASSWORD:
           Fluttertoast.showToast(msg: Constants.MSG_WRONG_PASSWORD);
-          break;
+          return false;
         default:
           Fluttertoast.showToast(msg: Constants.MSG_ERROR_OCCURED);
+          return false;
       }
     }
   }
 
   Future<bool> _validateAndSubmit() async {
     try {
+      FocusScope.of(context).requestFocus(FocusNode());
       if (!_formKey.currentState.validate()) {
         return false;
       }
